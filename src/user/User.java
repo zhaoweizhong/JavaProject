@@ -3,8 +3,7 @@ package user;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public abstract class User {
-    protected static int userID = 0;
+public class User {
     protected String userName;
     protected String passHash;
 
@@ -18,10 +17,6 @@ public abstract class User {
 
     public String getUserName() {
         return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public static String hashPass(String password) {
