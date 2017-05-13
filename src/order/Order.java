@@ -3,7 +3,9 @@ package order;
 import java.util.Date;
 import java.util.Random;
 
+import exceptions.StatusUnavailableException;
 import flight.Flight;
+import flight.FlightStatus;
 import flight.SeatClass;
 import user.Passenger;
 
@@ -22,40 +24,6 @@ public class Order {
         this.seatClass = seatClass;
         createDate = new Date(); // Now
         status = OrderStatus.UNPAID;
-        // Generate Seat Number by Random
-        Random random = new Random();
-        boolean flag = true;
-        if (seatClass == SeatClass.EconomyClass) {
-            do {
-                int num = random.nextInt(145) + 8;
-                for(int i=0;i<flight.getSeatBooked().length;i++){
-                    if(num == flight.getSeatBooked()[i]){
-                        flag = false;
-                        break;
-                    }
-                }
-                if(flag){
-                    flight.addSeatBooked(num);
-                    seatNumber = num;
-                    break;
-                }
-            }while (1 == 1);
-        }else{
-            do {
-                int num = random.nextInt(9);
-                for(int i=0;i<flight.getSeatBooked().length;i++){
-                    if(num == flight.getSeatBooked()[i]){
-                        flag = false;
-                        break;
-                    }
-                }
-                if(flag){
-                    flight.addSeatBooked(num);
-                    seatNumber = num;
-                    break;
-                }
-            }while (1 == 1);
-        }
     }
 
     public int getSeatNumber() {
@@ -104,6 +72,45 @@ public class Order {
         return status;
     }
 
-    public void printOrder() {
+    public void processOrder() {
+        try {
+            // Generate Seat Number by Random
+            Random random = new Random();
+            boolean flag = true;
+            if (seatClass == SeatClass.EconomyClass) {
+                do {
+                    int num = random.nextInt(145) + 8;
+                    for(int i=0;i<flight.getSeatBooked().length;i++){
+                        if(num == flight.getSeatBooked()[i]){
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if(flag){
+                        flight.addSeatBooked(num);
+                        seatNumber = num;
+                        break;
+                    }
+                }while (1 == 1);
+            }else{
+                do {
+                    int num = random.nextInt(9);
+                    for(int i=0;i<flight.getSeatBooked().length;i++){
+                        if(num == flight.getSeatBooked()[i]){
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if(flag){
+                        flight.addSeatBooked(num);
+                        seatNumber = num;
+                        break;
+                    }
+                }while (1 == 1);
+            }
+        }
+        catch (StatusUnavailableException ex){
+            System.out.println("The flight is not available.");
+        }
     }
 }

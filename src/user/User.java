@@ -19,6 +19,10 @@ public class User {
         return userName;
     }
 
+    public void changeUserName(String userName) {
+        this.userName = userName;
+    }
+
     public static String hashPass(String password) {
         if (password  ==  null || password.length() == 0){
             return null;

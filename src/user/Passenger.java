@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import order.Order;
 
 public class Passenger extends User {
-    private static int passengerID = 0;
+    private static int passengerQuantity = 0;
+    private int passengerID;
     private String identityID;
     private String realName;
     private ArrayList<Order> orderList;
@@ -13,8 +14,13 @@ public class Passenger extends User {
         this.identityID = identityID;
         this.userName = userName;
         this.realName = realName;
-        passengerID++;
+        passengerQuantity++;
+        passengerID = passengerQuantity;
         passHash = hashPass(password);
+    }
+
+    public int getPassengerQuantity() {
+        return passengerQuantity;
     }
 
     public int getPassengerID() {
