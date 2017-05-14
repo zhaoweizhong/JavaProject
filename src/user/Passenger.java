@@ -1,6 +1,8 @@
 package user;
 
 import java.util.ArrayList;
+
+import data.Data;
 import order.Order;
 
 public class Passenger extends User {
@@ -8,7 +10,7 @@ public class Passenger extends User {
     private int passengerID;
     private String identityID;
     private String realName;
-    private ArrayList<Order> orderList;
+    private ArrayList<String> orderIDs;
 
     public Passenger(String identityID, String userName, String realName, String password) {
         this.identityID = identityID;
@@ -17,6 +19,16 @@ public class Passenger extends User {
         passengerQuantity++;
         passengerID = passengerQuantity;
         passHash = hashPass(password);
+    }
+
+    public Passenger(int passengerQuantity, int passengerID, String identityID, String userName, String realName, String passHash, ArrayList<String> orderIDs) {
+        this.identityID = identityID;
+        this.userName = userName;
+        this.realName = realName;
+        Passenger.passengerQuantity = passengerQuantity;
+        this.passengerID = passengerID;
+        this.passHash = passHash;
+        this.orderIDs = orderIDs;
     }
 
     public int getPassengerQuantity() {
@@ -35,11 +47,15 @@ public class Passenger extends User {
         return realName;
     }
 
-    public void addOrder(Order order) {
-        orderList.add(order);
+    public Passenger getPassengerByID(int passengerID) {
+        return null;
     }
 
-    public ArrayList<Order> getOrderList() {
-        return orderList;
+    public void addOrder(int orderID) {
+        orderIDs.add(String.valueOf(orderID));
+    }
+
+    public ArrayList<String> getOrderIDs() {
+        return orderIDs;
     }
 }

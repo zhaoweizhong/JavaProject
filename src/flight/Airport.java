@@ -13,6 +13,13 @@ public class Airport {
         airportID = airportQuantity;
     }
 
+    public Airport(int airportQuantity, int airportID, String airportName, String cityName) {
+        this.airportName = airportName;
+        this.cityName = cityName;
+        Airport.airportQuantity = airportQuantity;
+        this.airportID = airportID;
+    }
+
     public int getAirportID() {
         return airportID;
     }

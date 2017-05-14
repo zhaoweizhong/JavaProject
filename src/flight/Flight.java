@@ -32,6 +32,20 @@ public class Flight {
         seatBooked = new int[0];
     }
 
+    public Flight(int flightQuantity, int flightID, String flightNumber, Date departureTime, Date arrivalTime, Airport departureAirport, Airport arrivalAirport, int price) {
+        passengers = new ArrayList<>();
+        this.flightNumber = flightNumber;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+        this.departureAirport = departureAirport;
+        this.arrivalAirport = arrivalAirport;
+        this.price = price;
+        this.flightStatus = FlightStatus.UNPUBLISHED;
+        flightQuantity++;
+        flightID = flightQuantity;
+        seatBooked = new int[0];
+    }
+
     public static Date calendar(int year, int month, int date, int hr, int min, int sec) {
         Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8:00"));
         calendar.clear();
