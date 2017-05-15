@@ -1,5 +1,6 @@
 package user;
 
+import java.sql.*;
 import java.util.ArrayList;
 
 import data.Data;
@@ -13,12 +14,39 @@ public class Passenger extends User {
     private ArrayList<String> orderIDs;
 
     public Passenger(String identityID, String userName, String realName, String password) {
+        /** Local */
         this.identityID = identityID;
         this.userName = userName;
         this.realName = realName;
         passengerQuantity++;
         passengerID = passengerQuantity;
         passHash = hashPass(password);
+        /** Database */
+        try {
+            /** Initialize the MySQL Connection */
+            //调用Class.forName()方法加载驱动程序
+            Class.forName("com.mysql.jdbc.Driver");
+            //System.out.println("成功加载MySQL驱动！");
+            String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+            Connection conn;
+            conn = DriverManager.getConnection(url,"flight","123130");
+            Statement stmt = conn.createStatement(); //创建Statement对象
+            //System.out.println("成功连接到数据库！");
+            String sql = "insert into passenger (passengerQuantity,passengerID,realName,userName,identityID,passHash,orderIDs) values(?,?,?,?,?,?,?)";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, passengerQuantity++);
+            pstmt.setInt(2, passengerID);
+            pstmt.setString(3, realName);
+            pstmt.setString(4, userName);
+            pstmt.setString(5, identityID);
+            pstmt.setString(6, passHash);
+            pstmt.setString(7, orderIDs.toString());
+            pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+        }catch(Exception e)
+        {e.printStackTrace();}
     }
 
     public Passenger(int passengerQuantity, int passengerID, String identityID, String userName, String realName, String passHash, ArrayList<String> orderIDs) {

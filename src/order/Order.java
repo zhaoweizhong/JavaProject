@@ -1,5 +1,9 @@
 package order;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.Random;
 
@@ -21,6 +25,7 @@ public class Order {
     private OrderStatus status;
 
     public Order(Passenger passenger, Flight flight, SeatClass seatClass) {
+        /** Local */
         this.passenger = passenger;
         this.flight = flight;
         this.seatClass = seatClass;
@@ -28,9 +33,36 @@ public class Order {
         status = OrderStatus.UNPAID;
         orderQuantity++;
         orderID = orderQuantity;
+        /** Database */
+        try {
+            /** Initialize the MySQL Connection */
+            //调用Class.forName()方法加载驱动程序
+            Class.forName("com.mysql.jdbc.Driver");
+            //System.out.println("成功加载MySQL驱动！");
+            String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+            Connection conn;
+            conn = DriverManager.getConnection(url,"flight","123130");
+            Statement stmt = conn.createStatement(); //创建Statement对象
+            //System.out.println("成功连接到数据库！");
+            String sql = "insert into orders (orderQuantity,orderID,passengerID,seatClass,seatNumber,flightID,createDateTimestamp,orderStatus) values(?,?,?,?,?,?,?,?)";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, orderQuantity++);
+            pstmt.setInt(2, orderID);
+            pstmt.setInt(3, passenger.getPassengerID());
+            pstmt.setString(4, seatClass.toString());
+            pstmt.setInt(5, 0);
+            pstmt.setInt(6, flight.getFlightID());
+            pstmt.setObject(7, createDate.getTime());
+            pstmt.setString(8, status.toString());
+            pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+        }catch(Exception e)
+        {e.printStackTrace();}
     }
 
-    public Order(int orderQuantity, int orderID, int passengerID, String seatClass, int seatNumber, int flightID, int createDateTimestamp, String orderStatus) {
+    public Order(int orderQuantity, int orderID, int passengerID, String seatClass, int seatNumber, int flightID, long createDateTimestamp, String orderStatus) {
         Order.orderQuantity = orderQuantity;
         this.orderID = orderID;
         passenger = Passenger.getPassengerByID(passengerID);
@@ -87,9 +119,13 @@ public class Order {
         return status;
     }
 
+    public void cancelOrder() {
+        status = OrderStatus.CANCLED;
+    }
+
     public void processOrder() {
         try {
-            // Generate Seat Number by Random
+            // Generate Seat Number by Random and Update It to Database
             Random random = new Random();
             boolean flag = true;
             if (seatClass == SeatClass.EconomyClass) {
@@ -104,6 +140,25 @@ public class Order {
                     if(flag){
                         flight.addSeatBooked(num);
                         seatNumber = num;
+                        /** Database */
+                        try {
+                            /** Initialize the MySQL Connection */
+                            //调用Class.forName()方法加载驱动程序
+                            Class.forName("com.mysql.jdbc.Driver");
+                            //System.out.println("成功加载MySQL驱动！");
+                            String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+                            Connection conn;
+                            conn = DriverManager.getConnection(url,"flight","123130");
+                            Statement stmt = conn.createStatement(); //创建Statement对象
+                            //System.out.println("成功连接到数据库！");
+                            String sql = "update orders set seatNumber='" + seatNumber + "' where orderID='" + orderID + "'";
+                            PreparedStatement pstmt;
+                            pstmt = conn.prepareStatement(sql);
+                            pstmt.executeUpdate();
+                            pstmt.close();
+                            conn.close();
+                        }catch(Exception e)
+                        {e.printStackTrace();}
                         break;
                     }
                 }while (1 == 1);
@@ -119,10 +174,30 @@ public class Order {
                     if(flag){
                         flight.addSeatBooked(num);
                         seatNumber = num;
+                        /** Database */
+                        try {
+                            /** Initialize the MySQL Connection */
+                            //调用Class.forName()方法加载驱动程序
+                            Class.forName("com.mysql.jdbc.Driver");
+                            //System.out.println("成功加载MySQL驱动！");
+                            String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+                            Connection conn;
+                            conn = DriverManager.getConnection(url,"flight","123130");
+                            Statement stmt = conn.createStatement(); //创建Statement对象
+                            //System.out.println("成功连接到数据库！");
+                            String sql = "update orders set seatNumber='" + seatNumber + "' where orderID='" + orderID + "'";
+                            PreparedStatement pstmt;
+                            pstmt = conn.prepareStatement(sql);
+                            pstmt.executeUpdate();
+                            pstmt.close();
+                            conn.close();
+                        }catch(Exception e)
+                        {e.printStackTrace();}
                         break;
                     }
                 }while (1 == 1);
             }
+            status = OrderStatus.PAID;
         }
         catch (StatusUnavailableException ex){
             System.out.println("The flight is not available.");

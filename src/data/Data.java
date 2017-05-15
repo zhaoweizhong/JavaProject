@@ -37,7 +37,7 @@ public class Data {
             String sql1 = "select * from admin";    //要执行的SQL
             ResultSet rs1 = stmt.executeQuery(sql1);//创建数据对象
             while (rs1.next()){
-                Admin admin = new Admin(rs1.getString(1), rs1.getString(2));
+                Admin admin = new Admin(rs1.getString(1), rs1.getString(2), 1);
                 admins.add(admin);
             }
             rs1.close();
@@ -65,19 +65,19 @@ public class Data {
             String sql4 = "select * from flight";    //要执行的SQL
             ResultSet rs4 = stmt.executeQuery(sql4);//创建数据对象
             while (rs4.next()){
-                Flight flight = new Flight(rs4.getInt(1), rs4.getInt(2), rs4.getString(3), rs4.getInt(4), rs4.getInt(5),
-                        rs4.getInt(6), rs4.getInt(7), rs4.getInt(8), rs4.getInt(9), toArrayList(rs4.getString(10)),
-                        rs4.getString(11), toArrayList(rs4.getString(12)));
+                Flight flight = new Flight(rs4.getInt(1), rs4.getInt(2), rs4.getString(3), (long)rs4.getObject(4),
+                        (long)rs4.getObject(5), rs4.getInt(6), rs4.getInt(7), rs4.getInt(8), rs4.getInt(9),
+                        toArrayList(rs4.getString(10)), rs4.getString(11), toArrayList(rs4.getString(12)));
                 flights.add(flight);
             }
             rs4.close();
 
             /** Order */
-            String sql5 = "select * from order";    //要执行的SQL
+            String sql5 = "select * from orders";    //要执行的SQL
             ResultSet rs5 = stmt.executeQuery(sql5);//创建数据对象
             while (rs5.next()){
                 Order order = new Order(rs5.getInt(1), rs5.getInt(2), rs5.getInt(3), rs5.getString(4), rs5.getInt(5),
-                        rs5.getInt(6), rs5.getInt(7), rs5.getString(8));
+                        rs5.getInt(6), (long)rs5.getObject(7), rs5.getString(8));
                 orders.add(order);
             }
             rs5.close();

@@ -3,8 +3,9 @@ package flight;
 import data.Data;
 import exceptions.StatusUnavailableException;
 import user.Passenger;
-
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 public class Flight {
     private static int flightQuantity = 0;
@@ -21,6 +22,7 @@ public class Flight {
     private ArrayList<Passenger> passengers;
 
     public Flight(String flightNumber, Date departureTime, Date arrivalTime, Airport departureAirport, Airport arrivalAirport, int price, int seatCapacity) {
+        /** Local */
         passengers = new ArrayList<>();
         this.flightNumber = flightNumber;
         this.departureTime = departureTime;
@@ -33,9 +35,41 @@ public class Flight {
         flightID = flightQuantity;
         this.seatCapacity = seatCapacity;
         seatBooked = new ArrayList<>();
+        /** Database */
+        try {
+            /** Initialize the MySQL Connection */
+            //调用Class.forName()方法加载驱动程序
+            Class.forName("com.mysql.jdbc.Driver");
+            //System.out.println("成功加载MySQL驱动！");
+            String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+            Connection conn;
+            conn = DriverManager.getConnection(url,"flight","123130");
+            Statement stmt = conn.createStatement(); //创建Statement对象
+            //System.out.println("成功连接到数据库！");
+            String sql = "insert into flight (flightQuantity,flightID,flightNumber,departureTimestamp,arrivalTimestamp,departureAirportID,arrivalAirportID,price,seatCapacity," +
+                    "seatBooked,flightStatus,passengerIDs) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, flightQuantity++);
+            pstmt.setInt(2, flightID);
+            pstmt.setString(3, flightNumber);
+            pstmt.setObject(4, departureTime.getTime());
+            pstmt.setObject(5, arrivalTime.getTime());
+            pstmt.setInt(6, departureAirport.getAirportID());
+            pstmt.setInt(7, arrivalAirport.getAirportID());
+            pstmt.setInt(8, price);
+            pstmt.setInt(9, seatCapacity);
+            pstmt.setString(10, seatBooked.toString());
+            pstmt.setString(11, flightStatus.toString());
+            pstmt.setString(12, passengers.toString());
+            pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+        }catch(Exception e)
+        {e.printStackTrace();}
     }
 
-    public Flight(int flightQuantity, int flightID, String flightNumber, int departureTimestamp, int arrivalTimestamp, int departureAirportID, int arrivalAirportID,
+    public Flight(int flightQuantity, int flightID, String flightNumber, long departureTimestamp, long arrivalTimestamp, int departureAirportID, int arrivalAirportID,
                   int price, int seatCapacity, ArrayList<String> seatBooked, String flightStatus, ArrayList<String> passengerIDs) {
         Flight.flightQuantity = flightQuantity;
         this.flightID = flightID;
@@ -139,6 +173,14 @@ public class Flight {
         }else{
             throw new StatusUnavailableException(flightStatus);
         }
+    }
+
+    public int getSeatCapacity() {
+        return seatCapacity;
+    }
+
+    public void setSeatCapacity(int seatCapacity) {
+        this.seatCapacity = seatCapacity;
     }
 
     public FlightStatus getFlightStatus() {

@@ -1,5 +1,7 @@
 package user;
 
+import data.Data;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -21,6 +23,20 @@ public class User {
 
     public void changeUserName(String userName) {
         this.userName = userName;
+    }
+
+    public static User getUserByUserName(String userName) {
+        for (User user: Data.passengers) {
+            if (user.userName.equals(userName)) {
+                return user;
+            }
+        }
+        for (User user: Data.admins) {
+            if (user.userName.equals(userName)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     public static String hashPass(String password) {
