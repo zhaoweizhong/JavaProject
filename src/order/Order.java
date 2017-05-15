@@ -3,6 +3,7 @@ package order;
 import java.util.Date;
 import java.util.Random;
 
+import com.sun.tools.corba.se.idl.constExpr.Or;
 import exceptions.StatusUnavailableException;
 import flight.Flight;
 import flight.FlightStatus;
@@ -10,7 +11,8 @@ import flight.SeatClass;
 import user.Passenger;
 
 public class Order {
-
+    private static int orderQuantity = 0;
+    private int orderID;
     private Passenger passenger;
     private SeatClass seatClass;
     private int seatNumber;
@@ -24,6 +26,19 @@ public class Order {
         this.seatClass = seatClass;
         createDate = new Date(); // Now
         status = OrderStatus.UNPAID;
+        orderQuantity++;
+        orderID = orderQuantity;
+    }
+
+    public Order(int orderQuantity, int orderID, int passengerID, String seatClass, int seatNumber, int flightID, int createDateTimestamp, String orderStatus) {
+        Order.orderQuantity = orderQuantity;
+        this.orderID = orderID;
+        passenger = Passenger.getPassengerByID(passengerID);
+        this.seatClass = SeatClass.valueOf(seatClass);
+        this.seatNumber = seatNumber;
+        flight = Flight.getFlightByID(flightID);
+        createDate = new Date(createDateTimestamp);
+        status = OrderStatus.valueOf(orderStatus);
     }
 
     public int getSeatNumber() {
@@ -80,8 +95,8 @@ public class Order {
             if (seatClass == SeatClass.EconomyClass) {
                 do {
                     int num = random.nextInt(145) + 8;
-                    for(int i=0;i<flight.getSeatBooked().length;i++){
-                        if(num == flight.getSeatBooked()[i]){
+                    for(int i=0;i<flight.getSeatBooked().size();i++){
+                        if(String.valueOf(num) == flight.getSeatBooked().get(i)){
                             flag = false;
                             break;
                         }
@@ -95,8 +110,8 @@ public class Order {
             }else{
                 do {
                     int num = random.nextInt(9);
-                    for(int i=0;i<flight.getSeatBooked().length;i++){
-                        if(num == flight.getSeatBooked()[i]){
+                    for(int i=0;i<flight.getSeatBooked().size();i++){
+                        if(String.valueOf(num) == flight.getSeatBooked().get(i)){
                             flag = false;
                             break;
                         }

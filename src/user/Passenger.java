@@ -47,7 +47,12 @@ public class Passenger extends User {
         return realName;
     }
 
-    public Passenger getPassengerByID(int passengerID) {
+    public static Passenger getPassengerByID(int passengerID) {
+        for (Passenger passenger:Data.passengers) {
+            if (passenger.passengerID == passengerID) {
+                return passenger;
+            }
+        }
         return null;
     }
 

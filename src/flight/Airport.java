@@ -1,5 +1,8 @@
 package flight;
 
+import data.Data;
+import user.Passenger;
+
 public class Airport {
     private static int airportQuantity = 0;
     private int airportID;
@@ -38,5 +41,14 @@ public class Airport {
 
     public void setCityName(String cityName) {
         this.cityName = cityName;
+    }
+
+    public static Airport getAirportByID(int airportID) {
+        for (Airport airport: Data.airports) {
+            if (airport.airportID == airportID) {
+                return airport;
+            }
+        }
+        return null;
     }
 }

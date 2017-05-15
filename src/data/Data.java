@@ -5,17 +5,16 @@ import flight.Flight;
 import order.Order;
 import user.Admin;
 import user.Passenger;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Data {
-    public ArrayList<Admin> admins = new ArrayList<>();
-    public ArrayList<Passenger> passengers = new ArrayList<>();
-    public ArrayList<Flight> flights = new ArrayList<>();
-    public ArrayList<Airport> airports = new ArrayList<>();
+    public static ArrayList<Admin> admins = new ArrayList<>();
+    public static ArrayList<Passenger> passengers = new ArrayList<>();
+    public static ArrayList<Flight> flights = new ArrayList<>();
+    public static ArrayList<Airport> airports = new ArrayList<>();
+    public static ArrayList<Order> orders = new ArrayList<>();
 
     public Data() {
     }
@@ -47,7 +46,8 @@ public class Data {
             String sql2 = "select * from passenger";    //要执行的SQL
             ResultSet rs2 = stmt.executeQuery(sql2);//创建数据对象
             while (rs2.next()){
-                Passenger passenger = new Passenger(rs2.getInt(1), rs2.getInt(2), rs2.getString(5), rs2.getString(4), rs2.getString(3), rs2.getString(6), toArrayList(rs2.getString(7)));
+                Passenger passenger = new Passenger(rs2.getInt(1), rs2.getInt(2), rs2.getString(5), rs2.getString(4),
+                        rs2.getString(3), rs2.getString(6), toArrayList(rs2.getString(7)));
                 passengers.add(passenger);
             }
             rs2.close();
@@ -65,10 +65,22 @@ public class Data {
             String sql4 = "select * from flight";    //要执行的SQL
             ResultSet rs4 = stmt.executeQuery(sql4);//创建数据对象
             while (rs4.next()){
-                Flight flight = new Flight();
+                Flight flight = new Flight(rs4.getInt(1), rs4.getInt(2), rs4.getString(3), rs4.getInt(4), rs4.getInt(5),
+                        rs4.getInt(6), rs4.getInt(7), rs4.getInt(8), rs4.getInt(9), toArrayList(rs4.getString(10)),
+                        rs4.getString(11), toArrayList(rs4.getString(12)));
                 flights.add(flight);
             }
             rs4.close();
+
+            /** Order */
+            String sql5 = "select * from order";    //要执行的SQL
+            ResultSet rs5 = stmt.executeQuery(sql5);//创建数据对象
+            while (rs5.next()){
+                Order order = new Order(rs5.getInt(1), rs5.getInt(2), rs5.getInt(3), rs5.getString(4), rs5.getInt(5),
+                        rs5.getInt(6), rs5.getInt(7), rs5.getString(8));
+                orders.add(order);
+            }
+            rs5.close();
 
             /** Close the MySQL Connection */
             stmt.close();

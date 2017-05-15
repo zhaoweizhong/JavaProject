@@ -1,5 +1,6 @@
 package flight;
 
+import data.Data;
 import exceptions.StatusUnavailableException;
 import user.Passenger;
 
@@ -14,11 +15,12 @@ public class Flight {
     private Airport departureAirport;
     private Airport arrivalAirport;
     private int price;
-    private int[] seatBooked;
+    private int seatCapacity;
+    private ArrayList<String> seatBooked;
     private FlightStatus flightStatus;
     private ArrayList<Passenger> passengers;
 
-    public Flight(String flightNumber, Date departureTime, Date arrivalTime, Airport departureAirport, Airport arrivalAirport, int price) {
+    public Flight(String flightNumber, Date departureTime, Date arrivalTime, Airport departureAirport, Airport arrivalAirport, int price, int seatCapacity) {
         passengers = new ArrayList<>();
         this.flightNumber = flightNumber;
         this.departureTime = departureTime;
@@ -29,21 +31,27 @@ public class Flight {
         this.flightStatus = FlightStatus.UNPUBLISHED;
         flightQuantity++;
         flightID = flightQuantity;
-        seatBooked = new int[0];
+        this.seatCapacity = seatCapacity;
+        seatBooked = new ArrayList<>();
     }
 
-    public Flight(int flightQuantity, int flightID, String flightNumber, Date departureTime, Date arrivalTime, Airport departureAirport, Airport arrivalAirport, int price) {
-        passengers = new ArrayList<>();
+    public Flight(int flightQuantity, int flightID, String flightNumber, int departureTimestamp, int arrivalTimestamp, int departureAirportID, int arrivalAirportID,
+                  int price, int seatCapacity, ArrayList<String> seatBooked, String flightStatus, ArrayList<String> passengerIDs) {
+        Flight.flightQuantity = flightQuantity;
+        this.flightID = flightID;
         this.flightNumber = flightNumber;
-        this.departureTime = departureTime;
-        this.arrivalTime = arrivalTime;
-        this.departureAirport = departureAirport;
-        this.arrivalAirport = arrivalAirport;
+        departureTime = new Date(departureTimestamp);
+        arrivalTime = new Date(arrivalTimestamp);
+        departureAirport = Airport.getAirportByID(departureAirportID);
+        arrivalAirport = Airport.getAirportByID(arrivalAirportID);
         this.price = price;
-        this.flightStatus = FlightStatus.UNPUBLISHED;
-        flightQuantity++;
-        flightID = flightQuantity;
-        seatBooked = new int[0];
+        this.seatCapacity = seatCapacity;
+        this.seatBooked = seatBooked;
+        passengers = new ArrayList<>();
+        this.flightStatus = FlightStatus.valueOf(flightStatus);
+        for (int i = 0; i <= passengerIDs.size(); i++) {
+            passengers.add(Passenger.getPassengerByID(Integer.parseInt(passengerIDs.get(i))));
+        }
     }
 
     public static Date calendar(int year, int month, int date, int hr, int min, int sec) {
@@ -153,22 +161,22 @@ public class Flight {
         }
     }
 
-    public int[] getSeatBooked() {
+    public static Flight getFlightByID(int flightID) {
+        for (Flight flight: Data.flights) {
+            if (flight.flightID == flightID) {
+                return flight;
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<String> getSeatBooked() {
         return seatBooked;
     }
 
     public void addSeatBooked(int seatNumber) throws StatusUnavailableException {
         if (flightStatus == FlightStatus.AVAILABLE) {
-            List<Integer> list = new ArrayList<>();
-            for (int i = 0; i < seatBooked.length; i++) {
-                list.add(seatBooked[i]);
-            }
-            list.add(seatNumber);
-            int[] newSeatBooked = new int[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                newSeatBooked[i] = list.get(i);
-            }
-            seatBooked = newSeatBooked;
+            seatBooked.add(String.valueOf(seatNumber));
         }else{
             throw new StatusUnavailableException(flightStatus);
         }
