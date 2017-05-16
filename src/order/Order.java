@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Random;
 
 import com.sun.tools.corba.se.idl.constExpr.Or;
+import data.Data;
 import exceptions.StatusUnavailableException;
 import flight.Flight;
 import flight.FlightStatus;
@@ -25,7 +26,7 @@ public class Order {
     private OrderStatus status;
 
     public Order(Passenger passenger, Flight flight, SeatClass seatClass) {
-        /** Local */
+        /* Local */
         this.passenger = passenger;
         this.flight = flight;
         this.seatClass = seatClass;
@@ -33,9 +34,9 @@ public class Order {
         status = OrderStatus.UNPAID;
         orderQuantity++;
         orderID = orderQuantity;
-        /** Database */
+        /* Database */
         try {
-            /** Initialize the MySQL Connection */
+            /* Initialize the MySQL Connection */
             //调用Class.forName()方法加载驱动程序
             Class.forName("com.mysql.jdbc.Driver");
             //System.out.println("成功加载MySQL驱动！");
@@ -111,6 +112,15 @@ public class Order {
         return flight;
     }
 
+    public static Order getOrderByID(int orderID) {
+        for (Order order: Data.orders) {
+            if (order.orderID == orderID) {
+                return order;
+            }
+        }
+        return null;
+    }
+
     public Date getCreateDate() {
         return createDate;
     }
@@ -140,9 +150,9 @@ public class Order {
                     if(flag){
                         flight.addSeatBooked(num);
                         seatNumber = num;
-                        /** Database */
+                        /* Database */
                         try {
-                            /** Initialize the MySQL Connection */
+                            /* Initialize the MySQL Connection */
                             //调用Class.forName()方法加载驱动程序
                             Class.forName("com.mysql.jdbc.Driver");
                             //System.out.println("成功加载MySQL驱动！");
@@ -174,9 +184,9 @@ public class Order {
                     if(flag){
                         flight.addSeatBooked(num);
                         seatNumber = num;
-                        /** Database */
+                        /* Database */
                         try {
-                            /** Initialize the MySQL Connection */
+                            /* Initialize the MySQL Connection */
                             //调用Class.forName()方法加载驱动程序
                             Class.forName("com.mysql.jdbc.Driver");
                             //System.out.println("成功加载MySQL驱动！");

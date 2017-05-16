@@ -4,12 +4,12 @@ import java.sql.*;
 
 public class Admin extends User {
     public Admin(String userName, String password) {
-        /** Local */
+        /* Local */
         this.userName = userName;
         passHash = hashPass(password);
-        /** Database */
+        /* Database */
         try {
-            /** Initialize the MySQL Connection */
+            /* Initialize the MySQL Connection */
             //调用Class.forName()方法加载驱动程序
             Class.forName("com.mysql.jdbc.Driver");
             //System.out.println("成功加载MySQL驱动！");

@@ -14,16 +14,16 @@ public class Passenger extends User {
     private ArrayList<String> orderIDs;
 
     public Passenger(String identityID, String userName, String realName, String password) {
-        /** Local */
+        /* Local */
         this.identityID = identityID;
         this.userName = userName;
         this.realName = realName;
         passengerQuantity++;
         passengerID = passengerQuantity;
         passHash = hashPass(password);
-        /** Database */
+        /* Database */
         try {
-            /** Initialize the MySQL Connection */
+            /* Initialize the MySQL Connection */
             //调用Class.forName()方法加载驱动程序
             Class.forName("com.mysql.jdbc.Driver");
             //System.out.println("成功加载MySQL驱动！");

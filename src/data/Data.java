@@ -21,7 +21,7 @@ public class Data {
 
     public void initialize() {
         try{
-            /** Initialize the MySQL Connection */
+            /* Initialize the MySQL Connection */
             //调用Class.forName()方法加载驱动程序
             Class.forName("com.mysql.jdbc.Driver");
             //System.out.println("成功加载MySQL驱动！");
@@ -33,7 +33,7 @@ public class Data {
             Statement stmt = conn.createStatement(); //创建Statement对象
             //System.out.println("成功连接到数据库！");
 
-            /** Admin */
+            /* Admin */
             String sql1 = "select * from admin";    //要执行的SQL
             ResultSet rs1 = stmt.executeQuery(sql1);//创建数据对象
             while (rs1.next()){
@@ -42,7 +42,7 @@ public class Data {
             }
             rs1.close();
 
-            /** Passenger */
+            /* Passenger */
             String sql2 = "select * from passenger";    //要执行的SQL
             ResultSet rs2 = stmt.executeQuery(sql2);//创建数据对象
             while (rs2.next()){
@@ -52,7 +52,7 @@ public class Data {
             }
             rs2.close();
 
-            /** Airport */
+            /* Airport */
             String sql3 = "select * from airport";    //要执行的SQL
             ResultSet rs3 = stmt.executeQuery(sql3);//创建数据对象
             while (rs3.next()){
@@ -61,7 +61,7 @@ public class Data {
             }
             rs3.close();
 
-            /** Flight */
+            /* Flight */
             String sql4 = "select * from flight";    //要执行的SQL
             ResultSet rs4 = stmt.executeQuery(sql4);//创建数据对象
             while (rs4.next()){
@@ -72,7 +72,7 @@ public class Data {
             }
             rs4.close();
 
-            /** Order */
+            /* Order */
             String sql5 = "select * from orders";    //要执行的SQL
             ResultSet rs5 = stmt.executeQuery(sql5);//创建数据对象
             while (rs5.next()){
@@ -82,7 +82,7 @@ public class Data {
             }
             rs5.close();
 
-            /** Close the MySQL Connection */
+            /* Close the MySQL Connection */
             stmt.close();
             conn.close();
         }catch(Exception e)

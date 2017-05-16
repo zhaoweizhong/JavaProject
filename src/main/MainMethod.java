@@ -6,6 +6,8 @@ import exceptions.StatusUnavailableException;
 import flight.Airport;
 import flight.Flight;
 import flight.FlightStatus;
+import flight.SeatClass;
+import order.Order;
 import user.Admin;
 import user.Passenger;
 import user.User;
@@ -27,7 +29,7 @@ public class MainMethod {
         User userTemp;
         for (int i = 0; i < Data.admins.size(); i++) {
             userTemp = Data.admins.get(i);
-            if (userTemp.getUserName() == userName && userTemp.getPassHash().equals(User.hashPass(password))) {
+            if (userTemp.getUserName().equals(userName) && userTemp.getPassHash().equals(User.hashPass(password))) {
                 isLogin = true;
                 isAdmin = true;
                 currentUser = userTemp;
@@ -36,7 +38,7 @@ public class MainMethod {
         }
         for (int i = 0; i < Data.admins.size(); i++) {
             userTemp = Data.passengers.get(i);
-            if (userTemp.getUserName() == userName && userTemp.getPassHash().equals(User.hashPass(password))) {
+            if (userTemp.getUserName().equals(userName) && userTemp.getPassHash().equals(User.hashPass(password))) {
                 isLogin = true;
                 currentUser = userTemp;
                 return true;
@@ -68,9 +70,9 @@ public class MainMethod {
         if (isLogin && isAdmin) {
             if (Flight.getFlightByID(flightID).getFlightStatus() == FlightStatus.UNPUBLISHED || Flight.getFlightByID(flightID).getFlightStatus() == FlightStatus.TERMINATE) {
                 Data.flights.remove(Flight.getFlightByID(flightID));
-                /** Database */
+                /* Database */
                 try {
-                    /** Initialize the MySQL Connection */
+                    /* Initialize the MySQL Connection */
                     //调用Class.forName()方法加载驱动程序
                     Class.forName("com.mysql.jdbc.Driver");
                     //System.out.println("成功加载MySQL驱动！");
@@ -119,20 +121,38 @@ public class MainMethod {
         }
     }
 
-    public void reserveFlight(int flightID) throws PermissionDeniedException, StatusUnavailableException {
-        // TODO reserveFlight
+    public void reserveFlight(int flightID, String seatClass) throws PermissionDeniedException, StatusUnavailableException {
         if (isLogin) {
             if (!isAdmin) {
-                Flight flight = Flight.getFlightByID(flightID);
-                flight.addPassenger((Passenger) currentUser);
+                if (Flight.getFlightByID(flightID).getFlightStatus() != FlightStatus.AVAILABLE) {
+                    Flight flight = Flight.getFlightByID(flightID);
+                    flight.addPassenger((Passenger)currentUser);
+                    Order order = new Order((Passenger)currentUser, flight, SeatClass.valueOf(seatClass));
+                    Data.orders.add(order);
+                }else{
+                    throw new StatusUnavailableException();
+                }
             }
         } else {
             throw new PermissionDeniedException();
         }
     }
 
-    public boolean unsubscribeFlight(int flightID) throws PermissionDeniedException { //return false when no flight is found
-        // TODO unsubscribeFlight
+    public boolean unsubscribeFlight(int orderID) throws PermissionDeniedException { // Return false when no flight is found
+        if (isLogin) {
+            if (!isAdmin) {
+                if (Data.orders.indexOf(Order.getOrderByID(orderID)) != -1 && Order.getOrderByID(orderID).getFlight().getPassengers().indexOf((Passenger)currentUser) != -1) {
+                    Data.orders.remove(Order.getOrderByID(orderID));
+                    Order.getOrderByID(orderID).getFlight().getPassengers().remove((Passenger)currentUser);
+                    if (Order.getOrderByID(orderID).getFlight().getFlightStatus() != FlightStatus.FULL) {
+                        Order.getOrderByID(orderID).getFlight().setFlightStatus(FlightStatus.AVAILABLE);
+                    }
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            }
         return false;
     }
 }

@@ -22,7 +22,7 @@ public class Flight {
     private ArrayList<Passenger> passengers;
 
     public Flight(String flightNumber, Date departureTime, Date arrivalTime, Airport departureAirport, Airport arrivalAirport, int price, int seatCapacity) {
-        /** Local */
+        /* Local */
         passengers = new ArrayList<>();
         this.flightNumber = flightNumber;
         this.departureTime = departureTime;
@@ -35,9 +35,9 @@ public class Flight {
         flightID = flightQuantity;
         this.seatCapacity = seatCapacity;
         seatBooked = new ArrayList<>();
-        /** Database */
+        /* Database */
         try {
-            /** Initialize the MySQL Connection */
+            /* Initialize the MySQL Connection */
             //调用Class.forName()方法加载驱动程序
             Class.forName("com.mysql.jdbc.Driver");
             //System.out.println("成功加载MySQL驱动！");
