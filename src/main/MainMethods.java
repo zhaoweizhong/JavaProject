@@ -15,12 +15,12 @@ import user.User;
 import java.sql.*;
 import java.util.Date;
 
-public class MainMethod {
+public class MainMethods {
     private User currentUser;
     private boolean isLogin;
     private boolean isAdmin;
 
-    public MainMethod() {
+    public MainMethods() {
         isLogin = false;
         isAdmin = false;
     }
