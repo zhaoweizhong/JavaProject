@@ -1,17 +1,12 @@
 package order;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Date;
 import java.util.Random;
 
-import com.sun.tools.corba.se.idl.constExpr.Or;
 import data.Data;
 import exceptions.StatusUnavailableException;
 import flight.Flight;
-import flight.FlightStatus;
 import flight.SeatClass;
 import user.Passenger;
 

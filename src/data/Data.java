@@ -19,7 +19,7 @@ public class Data {
     public Data() {
     }
 
-    public void initialize() {
+    public static void initialize() {
         try{
             /* Initialize the MySQL Connection */
             //调用Class.forName()方法加载驱动程序

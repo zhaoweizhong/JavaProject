@@ -79,7 +79,7 @@ public class Airport {
         return null;
     }
 
-    public static Airport getAirportByName(int airportName) {
+    public static Airport getAirportByName(String airportName) {
         for (Airport airport: Data.airports) {
             if (airport.airportName.equals(airportName)) {
                 return airport;
