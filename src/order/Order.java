@@ -69,13 +69,17 @@ public class Order {
         status = OrderStatus.valueOf(orderStatus);
     }
 
+    public int getOrderID() {
+        return orderID;
+    }
+
     public int getSeatNumber() {
         return seatNumber;
     }
 
     public String getSeat() {
         String seat = null;
-        if (seatClass == SeatClass.EconomyClass) {
+        if (seatClass == SeatClass.Economy) {
             switch (seatNumber % 6) {
                 case 0: seat = (seatNumber / 6) + "A"; break;
                 case 1: seat = (seatNumber / 6) + "B"; break;
@@ -133,11 +137,11 @@ public class Order {
             // Generate Seat Number by Random and Update It to Database
             Random random = new Random();
             boolean flag = true;
-            if (seatClass == SeatClass.EconomyClass) {
+            if (seatClass == SeatClass.Economy) {
                 do {
                     int num = random.nextInt(145) + 8;
                     for(int i=0;i<flight.getSeatBooked().size();i++){
-                        if(String.valueOf(num) == flight.getSeatBooked().get(i)){
+                        if(String.valueOf(num).equals(flight.getSeatBooked().get(i))){
                             flag = false;
                             break;
                         }
@@ -171,7 +175,7 @@ public class Order {
                 do {
                     int num = random.nextInt(9);
                     for(int i=0;i<flight.getSeatBooked().size();i++){
-                        if(String.valueOf(num) == flight.getSeatBooked().get(i)){
+                        if(String.valueOf(num).equals(flight.getSeatBooked().get(i))){
                             flag = false;
                             break;
                         }

@@ -128,7 +128,7 @@ public class MainMethods {
         }
     }
 
-    public boolean updateFlight(int flightId, String flightNumber, Date departureTime, Date arrivalTime, String departureAirportName, String arrivalAirportName, int price, int seatCapacity) {
+    public boolean updateFlight(int flightId, String flightNumber, Date departureTime, Date arrivalTime, String departureAirportName, String arrivalAirportName, int economyPrice, int firstPrice) {
         Flight flight = Flight.getFlightByID(flightId);
         try{
             flight.setFlightNumber(flightNumber);
@@ -136,8 +136,8 @@ public class MainMethods {
             flight.setArrivalTime(arrivalTime);
             flight.setDepartureAirport(Airport.getAirportByName(departureAirportName));
             flight.setArrivalAirport(Airport.getAirportByName(arrivalAirportName));
-            flight.setPrice(price);
-            flight.setSeatCapacity(seatCapacity);
+            flight.setEconomyPrice(economyPrice);
+            flight.setFirstPrice(firstPrice);
             return true;
         }catch (StatusUnavailableException e){
             return false;
@@ -145,11 +145,11 @@ public class MainMethods {
 
     }
 
-    public boolean updateFlight(int flightId, int price, int seatCapacity) {
+    public boolean updateFlight(int flightId, int economyPrice, int firstPrice) {
         Flight flight = Flight.getFlightByID(flightId);
         try{
-            flight.setPrice(price);
-            flight.setSeatCapacity(seatCapacity);
+            flight.setEconomyPrice(economyPrice);
+            flight.setFirstPrice(firstPrice);
             return true;
         }catch (StatusUnavailableException e){
             return false;

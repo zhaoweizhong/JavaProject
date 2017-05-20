@@ -1,8 +1,11 @@
 package main;
 
 import data.Data;
+import exceptions.PermissionDeniedException;
 import flight.Airport;
 import flight.Flight;
+import flight.SeatClass;
+import order.Order;
 import user.User;
 
 import java.text.DateFormat;
@@ -129,9 +132,9 @@ public class Main {
                 System.out.printf("%-8s", flight.getArrivalAirport().getCityName());
                 System.out.print("  ");
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                System.out.printf("%-8s", format.format(flight.getDepartureTime()));
+                System.out.print(format.format(flight.getDepartureTime()));
                 System.out.print("  ");
-                System.out.printf("%-8s", format.format(flight.getArrivalTime()));
+                System.out.print(format.format(flight.getArrivalTime()));
                 System.out.println(" **");
             }
             System.out.println("**                                                                          **");
@@ -188,7 +191,7 @@ public class Main {
             if (!mainMethods.isAdmin()) {
                 UserCenter();
             }else{
-                /* TODO: Admin Center */
+                AdminCenter();
             }
         }else{
             System.out.println("Login Failed!!");
@@ -271,7 +274,7 @@ public class Main {
         System.out.println("**                                                        **");
         System.out.println("**                       User Center                      **");
         System.out.println("**                                                        **");
-        System.out.println("**           Please enter the number to select            **");
+        System.out.println("**            Please enter the number to select           **");
         System.out.println("**                                                        **");
         System.out.println("************************************************************");
         System.out.println("**                                                        **");
@@ -285,8 +288,104 @@ public class Main {
         int input = scanner.nextInt();
         switch (input) {
             case 1: Clear(); QueryFlight(); break;
-            case 2: Clear(); /* TODO: Order List */
-            case 3: Clear(); Logout();
+            case 2: Clear(); Orders(); break;
+            case 3: Clear(); Logout(); break;
+        }
+    }
+
+    public static void Orders() {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<Order> orders = mainMethods.listOrder();
+        System.out.println("************************************************************************************************************************************");
+        System.out.println("************************************************************************************************************************************");
+        System.out.println("**                                                                                                                                **");
+        System.out.println("**                                                Welcome to the flight booking system!!                                          **");
+        System.out.println("**                                                                                                                                **");
+        System.out.println("**                                                 Please enter the order ID to cancel                                            **");
+        System.out.println("**                                                          Enter 0 to go back                                                    **");
+        System.out.println("**                                                                                                                                **");
+        System.out.println("************************************************************************************************************************************");
+        System.out.println("**                                                                                                                                **");
+        System.out.println("** ID  Flight Num.   Dep.      Dest.       Dep.Time          Dest.Time      Class   Seat Num.  Price       Create Date     Status **");
+        for (Order order:orders) {
+            System.out.print("** ");
+            System.out.printf("%2d)", order.getOrderID());
+            System.out.print("   ");
+            System.out.printf("%-6s", order.getFlight().getFlightNumber());
+            System.out.print("    ");
+            System.out.printf("%-8s", order.getFlight().getDepartureAirport().getCityName());
+            System.out.print("  ");
+            System.out.printf("%-8s", order.getFlight().getArrivalAirport().getCityName());
+            System.out.print("  ");
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            System.out.print(format.format(order.getFlight().getDepartureTime()));
+            System.out.print("  ");
+            System.out.print(format.format(order.getFlight().getArrivalTime()));
+            System.out.print("  ");
+            System.out.printf("%-7s", order.getSeatClass());
+            System.out.print("    ");
+            System.out.printf("%-3s", order.getSeat());
+            System.out.print("     ");
+            if (order.getSeatClass() == SeatClass.Economy) {
+                System.out.printf("RMB %-4d", order.getFlight().getEconomyPrice());
+            }else{
+                System.out.printf("RMB %-4d", order.getFlight().getFirstPrice());
+            }
+            System.out.print("   ");
+            System.out.print(format.format(order.getCreateDate()));
+            System.out.print("  ");
+            System.out.printf("%-7s", order.getStatus());
+            System.out.println(" **");
+        }
+        System.out.println("**                                                                                                                                **");
+        System.out.println("************************************************************************************************************************************");
+        System.out.println("************************************************************************************************************************************");
+        System.out.print("Please enter the order ID to cancel: ");
+        int input = scanner.nextInt();
+        try {
+            if (mainMethods.unsubscribeFlight(input)) {
+                System.out.println("Order Cancel Succeeded!! Refund will be returned to the original source.");
+                Wait(1);
+                Orders();
+            }else{
+                System.out.println("Order Cancel Failed!! Please contact our support team.");
+                Wait(1);
+                Orders();
+            }
+        }catch (PermissionDeniedException ex) {
+            System.out.println("Permission Denied!! Please login.");
+            Wait(1);
+            Login();
+        }
+    }
+
+    public static void AdminCenter() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**         Welcome to the flight booking system!!         **");
+        System.out.println("**                                                        **");
+        System.out.println("**                      Admin Center                      **");
+        System.out.println("**                                                        **");
+        System.out.println("**           Please enter the number to select            **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**      1) Query Flight                                   **");
+        System.out.println("**      2) Create Flight                                  **");
+        System.out.println("**      3) Edit Flight                                    **");
+        System.out.println("**      3) User Manage                                    **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.print("Please enter the number to select: ");
+        int input = scanner.nextInt();
+        switch (input) {
+            case 1: Clear(); /* TODO: Super Query */
+            case 2: Clear(); /* TODO: Create Flight */
+            case 3: Clear(); /* TODO: Edit Flight */
+            case 4: Clear(); /* TODO: User Manage */
         }
     }
 

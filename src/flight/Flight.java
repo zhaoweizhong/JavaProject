@@ -15,13 +15,13 @@ public class Flight {
     private Date arrivalTime;
     private Airport departureAirport;
     private Airport arrivalAirport;
-    private int price;
-    private int seatCapacity;
+    private int economyPrice;
+    private int firstPrice;
     private ArrayList<String> seatBooked;
     private FlightStatus flightStatus;
     private ArrayList<Passenger> passengers;
 
-    public Flight(String flightNumber, Date departureTime, Date arrivalTime, Airport departureAirport, Airport arrivalAirport, int price, int seatCapacity) {
+    public Flight(String flightNumber, Date departureTime, Date arrivalTime, Airport departureAirport, Airport arrivalAirport, int economyPrice, int firstPrice) {
         /* Local */
         passengers = new ArrayList<>();
         this.flightNumber = flightNumber;
@@ -29,11 +29,11 @@ public class Flight {
         this.arrivalTime = arrivalTime;
         this.departureAirport = departureAirport;
         this.arrivalAirport = arrivalAirport;
-        this.price = price;
+        this.economyPrice = economyPrice;
+        this.firstPrice = firstPrice;
         this.flightStatus = FlightStatus.UNPUBLISHED;
         flightQuantity++;
         flightID = flightQuantity;
-        this.seatCapacity = seatCapacity;
         seatBooked = new ArrayList<>();
         /* Database */
         try {
@@ -46,7 +46,7 @@ public class Flight {
             conn = DriverManager.getConnection(url,"flight","123130");
             Statement stmt = conn.createStatement(); //创建Statement对象
             //System.out.println("成功连接到数据库！");
-            String sql = "insert into flight (flightQuantity,flightID,flightNumber,departureTimestamp,arrivalTimestamp,departureAirportID,arrivalAirportID,price,seatCapacity," +
+            String sql = "insert into flight (flightQuantity,flightID,flightNumber,departureTimestamp,arrivalTimestamp,departureAirportID,arrivalAirportID,economyPrice,firstPrice," +
                     "seatBooked,flightStatus,passengerIDs) values(?,?,?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
@@ -57,8 +57,8 @@ public class Flight {
             pstmt.setObject(5, arrivalTime.getTime());
             pstmt.setInt(6, departureAirport.getAirportID());
             pstmt.setInt(7, arrivalAirport.getAirportID());
-            pstmt.setInt(8, price);
-            pstmt.setInt(9, seatCapacity);
+            pstmt.setInt(8, economyPrice);
+            pstmt.setInt(9, firstPrice);
             pstmt.setString(10, seatBooked.toString());
             pstmt.setString(11, flightStatus.toString());
             pstmt.setString(12, passengers.toString());
@@ -70,7 +70,7 @@ public class Flight {
     }
 
     public Flight(int flightQuantity, int flightID, String flightNumber, long departureTimestamp, long arrivalTimestamp, int departureAirportID, int arrivalAirportID,
-                  int price, int seatCapacity, ArrayList<String> seatBooked, String flightStatus, ArrayList<String> passengerIDs) {
+                  int economyPrice, int firstPrice, ArrayList<String> seatBooked, String flightStatus, ArrayList<String> passengerIDs) {
         Flight.flightQuantity = flightQuantity;
         this.flightID = flightID;
         this.flightNumber = flightNumber;
@@ -78,8 +78,8 @@ public class Flight {
         arrivalTime = new Date(arrivalTimestamp);
         departureAirport = Airport.getAirportByID(departureAirportID);
         arrivalAirport = Airport.getAirportByID(arrivalAirportID);
-        this.price = price;
-        this.seatCapacity = seatCapacity;
+        this.economyPrice = economyPrice;
+        this.firstPrice = firstPrice;
         this.seatBooked = seatBooked;
         passengers = new ArrayList<>();
         this.flightStatus = FlightStatus.valueOf(flightStatus);
@@ -163,24 +163,28 @@ public class Flight {
         }
     }
 
-    public int getPrice() {
-        return price;
+    public int getEconomyPrice() {
+        return economyPrice;
     }
 
-    public void setPrice(int price) throws StatusUnavailableException {
+    public int getFirstPrice() {
+        return firstPrice;
+    }
+
+    public void setEconomyPrice(int economyPrice) throws StatusUnavailableException {
         if (flightStatus == FlightStatus.AVAILABLE) {
-            this.price = price;
+            this.economyPrice = economyPrice;
         }else{
             throw new StatusUnavailableException(flightStatus);
         }
     }
 
-    public int getSeatCapacity() {
-        return seatCapacity;
-    }
-
-    public void setSeatCapacity(int seatCapacity) {
-        this.seatCapacity = seatCapacity;
+    public void setFirstPrice(int firstPrice) throws StatusUnavailableException {
+        if (flightStatus == FlightStatus.AVAILABLE) {
+            this.firstPrice = firstPrice;
+        }else{
+            throw new StatusUnavailableException(flightStatus);
+        }
     }
 
     public FlightStatus getFlightStatus() {
