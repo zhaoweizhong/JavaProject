@@ -36,6 +36,8 @@ public class Main {
         int input = scanner.nextInt();
         switch (input) {
             case 1: Clear(); QueryFlight(); break;
+            case 2: Clear(); Login(); break;
+            case 3: Clear(); Register(); break;
             case 4: Clear(); Initialize(); break;
         }
     }
@@ -61,6 +63,8 @@ public class Main {
         int input = scanner.nextInt();
         switch (input) {
             case 1: Clear(); QueryFlightByDepAndDest(); break;
+            case 2: Clear(); /* TODO: Query Flight By Flight Number */
+            case 3: Clear(); if (mainMethods.isLogin()){UserCenter();}else{main(null);} break;
         }
     }
 
@@ -91,9 +95,11 @@ public class Main {
         System.out.println("************************************************************");
         System.out.print("Please select the Departure Airport: ");
         int depAirportNum = scanner.nextInt();
+        scanner.nextLine();
         System.out.println();
         System.out.print("Please select the Departure Airport: ");
         int destAirportNum = scanner.nextInt();
+        scanner.nextLine();
         System.out.println();
         System.out.print("Please enter the departure date (Format: yyyy-MM-dd): ");
         String depDateStr = scanner.nextLine();
@@ -106,7 +112,7 @@ public class Main {
             System.out.println("**                                                                          **");
             System.out.println("**                  Welcome to the flight booking system!!                  **");
             System.out.println("**                                                                          **");
-            System.out.println("**                    Please enter the number to select                     **");
+            System.out.println("**                  Please enter the flight number to book                  **");
             System.out.println("**                           Enter 0 to go back                             **");
             System.out.println("**                                                                          **");
             System.out.println("******************************************************************************");
@@ -131,12 +137,156 @@ public class Main {
             System.out.println("**                                                                          **");
             System.out.println("******************************************************************************");
             System.out.println("******************************************************************************");
-
+            System.out.print("Please enter the number to select: ");
+            int input = scanner.nextInt();
+            if (input == 0) {
+                QueryFlightByDepAndDest();
+            }else{
+                if (mainMethods.isLogin()){
+                    /* TODO: Make Order */
+                }else{
+                    System.out.println("Sorry, you are not logged in, please login(1) or register(2) first.");
+                    System.out.print("Please enter the number to select: ");
+                    int input2 = scanner.nextInt();
+                    switch (input2) {
+                        case 1: Clear(); Login(); break;
+                        case 2: Clear(); Register(); break;
+                    }
+                }
+            }
         }catch (ParseException ex) {
             System.out.print("The date format is incorrect!");
             Wait(1);
             Clear();
             QueryFlightByDepAndDest();
+        }
+    }
+
+    public static void Login() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**                                                        **");
+        System.out.println("**         Welcome to the flight booking system!!         **");
+        System.out.println("**                                                        **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**                         Login                          **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.print("Username: ");
+        String userName = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+        if (mainMethods.login(userName, password)) {
+            System.out.println("Login Successful!");
+            Wait(1);
+            Clear();
+            if (!mainMethods.isAdmin()) {
+                UserCenter();
+            }else{
+                /* TODO: Admin Center */
+            }
+        }else{
+            System.out.println("Login Failed!!");
+            Wait(1);
+            Clear();
+            Login();
+        }
+    }
+
+    public static void Register() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**                                                        **");
+        System.out.println("**         Welcome to the flight booking system!!         **");
+        System.out.println("**                                                        **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**                        Register                        **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.print("Username: ");
+        String userName = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+        System.out.print("Name (English): ");
+        String realName = scanner.nextLine();
+        System.out.print("Identity ID: ");
+        String identityID = scanner.nextLine();
+        if (mainMethods.register(identityID, userName, realName, password)) {
+            System.out.println("Register Successful!");
+            Wait(1);
+            Clear();
+            Login();
+        }else{
+            System.out.println("Already Registered!");
+            Wait(1);
+            Clear();
+            Login();
+        }
+    }
+
+    public static void Logout() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**                                                        **");
+        System.out.println("**         Welcome to the flight booking system!!         **");
+        System.out.println("**                                                        **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**                        Log Out                         **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        if (mainMethods.logout()) {
+            System.out.println("Log Out Successful!");
+            Wait(1);
+            Clear();
+            main(null);
+        }else{
+            System.out.println("Log Out Failed!!");
+            Wait(1);
+            Clear();
+            Login();
+        }
+    }
+
+    public static void UserCenter() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**         Welcome to the flight booking system!!         **");
+        System.out.println("**                                                        **");
+        System.out.println("**                       User Center                      **");
+        System.out.println("**                                                        **");
+        System.out.println("**           Please enter the number to select            **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**      1) Query Flight                                   **");
+        System.out.println("**      2) My Orders                                      **");
+        System.out.println("**      3) Log Out                                        **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.print("Please enter the number to select: ");
+        int input = scanner.nextInt();
+        switch (input) {
+            case 1: Clear(); QueryFlight(); break;
+            case 2: Clear(); /* TODO: Order List */
+            case 3: Clear(); Logout();
         }
     }
 
