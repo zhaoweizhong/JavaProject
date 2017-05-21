@@ -21,6 +21,7 @@ public class Passenger extends User {
         passengerQuantity++;
         passengerID = passengerQuantity;
         passHash = hashPass(password);
+        orderIDs = new ArrayList<>();
         /* Database */
         try {
             /* Initialize the MySQL Connection */
@@ -35,7 +36,7 @@ public class Passenger extends User {
             String sql = "insert into passenger (passengerQuantity,passengerID,realName,userName,identityID,passHash,orderIDs) values(?,?,?,?,?,?,?)";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, passengerQuantity++);
+            pstmt.setInt(1, passengerQuantity);
             pstmt.setInt(2, passengerID);
             pstmt.setString(3, realName);
             pstmt.setString(4, userName);
@@ -85,7 +86,47 @@ public class Passenger extends User {
     }
 
     public void addOrder(int orderID) {
-        orderIDs.add(String.valueOf(orderID));
+        this.orderIDs.add(String.valueOf(orderID));
+        try {
+            /* Initialize the MySQL Connection */
+            //调用Class.forName()方法加载驱动程序
+            Class.forName("com.mysql.jdbc.Driver");
+            //System.out.println("成功加载MySQL驱动！");
+            String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+            Connection conn;
+            conn = DriverManager.getConnection(url,"flight","123130");
+            Statement stmt = conn.createStatement(); //创建Statement对象
+            //System.out.println("成功连接到数据库！");
+            String sql = "update passenger set orderIDs='" + orderIDs.toString() +"' where passengerID='" + this.passengerID + "'";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+        }catch(Exception e)
+        {e.printStackTrace();}
+    }
+
+    public void deleteOrder(int orderID) {
+        this.orderIDs.remove(String.valueOf(orderID));
+        try {
+            /* Initialize the MySQL Connection */
+            //调用Class.forName()方法加载驱动程序
+            Class.forName("com.mysql.jdbc.Driver");
+            //System.out.println("成功加载MySQL驱动！");
+            String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+            Connection conn;
+            conn = DriverManager.getConnection(url,"flight","123130");
+            Statement stmt = conn.createStatement(); //创建Statement对象
+            //System.out.println("成功连接到数据库！");
+            String sql = "update passenger set orderIDs='" + orderIDs.toString() +"' where passengerID='" + this.passengerID + "'";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+        }catch(Exception e)
+        {e.printStackTrace();}
     }
 
     public ArrayList<String> getOrderIDs() {

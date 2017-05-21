@@ -1,5 +1,6 @@
 package main;
 
+import com.sun.tools.corba.se.idl.constExpr.Or;
 import data.Data;
 import exceptions.PermissionDeniedException;
 import exceptions.StatusUnavailableException;
@@ -81,12 +82,12 @@ public class MainMethods {
         return isAdmin;
     }
 
-    public boolean createFlight(String flightNumber, Date departureTime, Date arrivalTime, String departureAirportName, String arrivalAirportName, int price,
-                                int seatCapacity) throws PermissionDeniedException {
+    public boolean createFlight(String flightNumber, Date departureTime, Date arrivalTime, String departureAirportName, String arrivalAirportName, int economyPrice,
+                                int firstPrice) throws PermissionDeniedException {
         if (isLogin && isAdmin) {
             if (arrivalTime.getTime() > departureTime.getTime() && departureTime.getTime() > new Date().getTime()) {
                 Flight flight = new Flight(flightNumber, departureTime, arrivalTime, Airport.getAirportByName(departureAirportName), Airport.getAirportByName(arrivalAirportName),
-                        price, seatCapacity);
+                        economyPrice, firstPrice);
                 Data.flights.add(flight);
             }else{
                 return false;
@@ -246,21 +247,15 @@ public class MainMethods {
         }
     }
 
-    public User getCurrentUser() throws PermissionDeniedException {
-        if (isLogin && isAdmin) {
-            return currentUser;
-        } else {
-            throw new PermissionDeniedException();
-        }
-    }
-
-    public void reserveFlight(int flightID, String seatClass) throws PermissionDeniedException, StatusUnavailableException {
+    public int reserveFlight(int flightID, String seatClass) throws PermissionDeniedException, StatusUnavailableException {
         if (isLogin && !isAdmin) {
             if (Flight.getFlightByID(flightID).getFlightStatus() == FlightStatus.AVAILABLE) {
                 Flight flight = Flight.getFlightByID(flightID);
                 flight.addPassenger((Passenger)currentUser);
                 Order order = new Order((Passenger)currentUser, flight, SeatClass.valueOf(seatClass));
                 Data.orders.add(order);
+                ((Passenger) currentUser).addOrder(order.getOrderID());
+                return order.getOrderID();
             }else{
                 throw new StatusUnavailableException();
             }
@@ -272,11 +267,34 @@ public class MainMethods {
     public boolean unsubscribeFlight(int orderID) throws PermissionDeniedException { // Return false when no flight is found
         if (isLogin && !isAdmin) {
             if (Data.orders.indexOf(Order.getOrderByID(orderID)) != -1 && Order.getOrderByID(orderID).getFlight().getPassengers().indexOf((Passenger)currentUser) != -1) {
-                Data.orders.remove(Order.getOrderByID(orderID));
+                Order.getOrderByID(orderID).cancelOrder();
                 Order.getOrderByID(orderID).getFlight().getPassengers().remove((Passenger)currentUser);
                 if (Order.getOrderByID(orderID).getFlight().getFlightStatus() != FlightStatus.FULL) {
                     Order.getOrderByID(orderID).getFlight().setFlightStatus(FlightStatus.AVAILABLE);
                 }
+                /* Database */
+                try {
+                    /* Initialize the MySQL Connection */
+                    //调用Class.forName()方法加载驱动程序
+                    Class.forName("com.mysql.jdbc.Driver");
+                    //System.out.println("成功加载MySQL驱动！");
+                    String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+                    Connection conn;
+                    conn = DriverManager.getConnection(url,"flight","123130");
+                    Statement stmt = conn.createStatement(); //创建Statement对象
+                    //System.out.println("成功连接到数据库！");
+                    String sql = "delete from orders where orderID=" + orderID;
+                    PreparedStatement pstmt;
+                    pstmt = conn.prepareStatement(sql);
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                    conn.close();
+                }catch(Exception e)
+                {e.printStackTrace();}
+                ((Passenger) currentUser).deleteOrder(orderID);
+                Order.getOrderByID(orderID).getFlight().removePassenger((Passenger)currentUser);
+                Order.getOrderByID(orderID).getFlight().removeSeatBooked(Order.getOrderByID(orderID).getSeatNumber());
+                Data.orders.remove(Order.getOrderByID(orderID));
                 return true;
             }else{
                 return false;

@@ -32,7 +32,7 @@ public class Airport {
             String sql = "insert into airport (airportQuantity,airportID,airportName,cityName) values(?,?,?,?)";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, airportQuantity++);
+            pstmt.setInt(1, airportQuantity);
             pstmt.setInt(2, airportID);
             pstmt.setString(3, airportName);
             pstmt.setString(4, cityName);

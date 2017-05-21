@@ -5,6 +5,8 @@ import flight.Flight;
 import order.Order;
 import user.Admin;
 import user.Passenger;
+
+import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +68,7 @@ public class Data {
             ResultSet rs4 = stmt.executeQuery(sql4);//创建数据对象
             while (rs4.next()){
                 Flight flight = new Flight(rs4.getInt(1), rs4.getInt(2), rs4.getString(3), (long)rs4.getObject(4),
-                        (long)rs4.getObject(5), rs4.getInt(6), rs4.getInt(7), rs4.getInt(8), rs4.getInt(9),
+                (long)rs4.getObject(5), rs4.getInt(6), rs4.getInt(7), rs4.getInt(8), rs4.getInt(9),
                         toArrayList(rs4.getString(10)), rs4.getString(11), toArrayList(rs4.getString(12)));
                 flights.add(flight);
             }
@@ -98,10 +100,15 @@ public class Data {
     }
 
     public static ArrayList<String> toArrayList(String str) {
-        String str1 = str.replace("[","");
-        String str2 = str1.replace("]","");
-        String str3 = str2.replace(" ","");
-        ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(str3.split(",")));
-        return arrayList;
+        if (str.equals("[]")) {
+            ArrayList<String> arrayList = new ArrayList<>();
+            return arrayList;
+        }else{
+            String str1 = str.replace("[","");
+            String str2 = str1.replace("]","");
+            String str3 = str2.replace(" ","");
+            ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(str3.split(",")));
+            return arrayList;
+        }
     }
 }

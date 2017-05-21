@@ -50,7 +50,7 @@ public class Flight {
                     "seatBooked,flightStatus,passengerIDs) values(?,?,?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, flightQuantity++);
+            pstmt.setInt(1, flightQuantity);
             pstmt.setInt(2, flightID);
             pstmt.setString(3, flightNumber);
             pstmt.setObject(4, departureTime.getTime());
@@ -83,8 +83,10 @@ public class Flight {
         this.seatBooked = seatBooked;
         passengers = new ArrayList<>();
         this.flightStatus = FlightStatus.valueOf(flightStatus);
-        for (int i = 0; i <= passengerIDs.size(); i++) {
-            passengers.add(Passenger.getPassengerByID(Integer.parseInt(passengerIDs.get(i))));
+        if (passengerIDs.size() != 0) {
+            for (int i = 0; i < passengerIDs.size(); i++) {
+                passengers.add(Passenger.getPassengerByID(Integer.parseInt(passengerIDs.get(i))));
+            }
         }
     }
 
@@ -202,9 +204,59 @@ public class Flight {
     public void addPassenger(Passenger passenger) throws StatusUnavailableException {
         if (flightStatus == FlightStatus.AVAILABLE) {
             passengers.add(passenger);
+            ArrayList<String> passengerIDs = new ArrayList<>();
+            for (Passenger tempPassenger:passengers) {
+                passengerIDs.add(String.valueOf(tempPassenger.getPassengerID()));
+            }
+            try {
+                /* Initialize the MySQL Connection */
+                //调用Class.forName()方法加载驱动程序
+                Class.forName("com.mysql.jdbc.Driver");
+                //System.out.println("成功加载MySQL驱动！");
+                String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+                Connection conn;
+                conn = DriverManager.getConnection(url,"flight","123130");
+                Statement stmt = conn.createStatement(); //创建Statement对象
+                //System.out.println("成功连接到数据库！");
+                String sql = "update flight set passengerIDs='" + passengerIDs.toString() +"' where flightID='" + flightID + "'";
+                PreparedStatement pstmt;
+                pstmt = conn.prepareStatement(sql);
+                pstmt.executeUpdate();
+                pstmt.close();
+                conn.close();
+            }catch(Exception e)
+            {e.printStackTrace();}
         } else {
             throw new StatusUnavailableException(flightStatus);
         }
+    }
+
+    public void removePassenger(Passenger passenger) {
+        passengers.remove(passenger);
+        ArrayList<String> passengerIDs = new ArrayList<>();
+        if (passengers.size() != 0) {
+            for (Passenger tempPassenger:passengers) {
+                passengerIDs.add(String.valueOf(tempPassenger.getPassengerID()));
+            }
+        }
+        try {
+            /* Initialize the MySQL Connection */
+            //调用Class.forName()方法加载驱动程序
+            Class.forName("com.mysql.jdbc.Driver");
+            //System.out.println("成功加载MySQL驱动！");
+            String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+            Connection conn;
+            conn = DriverManager.getConnection(url,"flight","123130");
+            Statement stmt = conn.createStatement(); //创建Statement对象
+            //System.out.println("成功连接到数据库！");
+            String sql = "update flight set passengerIDs='" + passengerIDs.toString() +"' where flightID='" + flightID + "'";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+        }catch(Exception e)
+        {e.printStackTrace();}
     }
 
     public static Flight getFlightByID(int flightID) {
@@ -222,9 +274,49 @@ public class Flight {
 
     public void addSeatBooked(int seatNumber) throws StatusUnavailableException {
         if (flightStatus == FlightStatus.AVAILABLE) {
-            seatBooked.add(String.valueOf(seatNumber));
+            this.seatBooked.add(String.valueOf(seatNumber));
+            try {
+                /* Initialize the MySQL Connection */
+                //调用Class.forName()方法加载驱动程序
+                Class.forName("com.mysql.jdbc.Driver");
+                //System.out.println("成功加载MySQL驱动！");
+                String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+                Connection conn;
+                conn = DriverManager.getConnection(url,"flight","123130");
+                Statement stmt = conn.createStatement(); //创建Statement对象
+                //System.out.println("成功连接到数据库！");
+                String sql = "update flight set seatBooked='" + this.seatBooked.toString() +"' where flightID='" + this.flightID + "'";
+                PreparedStatement pstmt;
+                pstmt = conn.prepareStatement(sql);
+                pstmt.executeUpdate();
+                pstmt.close();
+                conn.close();
+            }catch(Exception e)
+            {e.printStackTrace();}
         }else{
             throw new StatusUnavailableException(flightStatus);
         }
+    }
+
+    public void removeSeatBooked(int seatNumber) {
+        this.seatBooked.remove(String.valueOf(seatNumber));
+        try {
+                /* Initialize the MySQL Connection */
+            //调用Class.forName()方法加载驱动程序
+            Class.forName("com.mysql.jdbc.Driver");
+            //System.out.println("成功加载MySQL驱动！");
+            String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+            Connection conn;
+            conn = DriverManager.getConnection(url,"flight","123130");
+            Statement stmt = conn.createStatement(); //创建Statement对象
+            //System.out.println("成功连接到数据库！");
+            String sql = "update flight set seatBooked='" + this.seatBooked.toString() +"' where flightID='" + this.flightID + "'";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+        }catch(Exception e)
+        {e.printStackTrace();}
     }
 }
