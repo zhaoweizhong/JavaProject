@@ -2,8 +2,10 @@ package main;
 
 import data.Data;
 import exceptions.PermissionDeniedException;
+import exceptions.StatusUnavailableException;
 import flight.Airport;
 import flight.Flight;
+import flight.FlightStatus;
 import flight.SeatClass;
 import order.Order;
 import user.User;
@@ -66,8 +68,90 @@ public class Main {
         int input = scanner.nextInt();
         switch (input) {
             case 1: Clear(); QueryFlightByDepAndDest(); break;
-            case 2: Clear(); /* TODO: Query Flight By Flight Number */
+            case 2: Clear(); QueryFlightByFlightNum(); break;
             case 3: Clear(); if (mainMethods.isLogin()){UserCenter();}else{main(null);} break;
+        }
+    }
+
+    public static void QueryFlightByFlightNum() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**         Welcome to the flight booking system!!         **");
+        System.out.println("**                                                        **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("**                                                        **");
+        System.out.println("**            Please enter the flight number              **");
+        System.out.println("**                 Fuzzy Query Supported                  **");
+        System.out.println("**                                                        **");
+        System.out.println("************************************************************");
+        System.out.println("************************************************************");
+        System.out.print("Please enter the flight number to query: ");
+        String input = scanner.nextLine();
+        ArrayList<Flight> flights = mainMethods.queryFlight(input);
+        System.out.println("*************************************************************************************");
+        System.out.println("*************************************************************************************");
+        System.out.println("**                                                                                 **");
+        System.out.println("**                      Welcome to the flight booking system!!                     **");
+        System.out.println("**                                                                                 **");
+        System.out.println("**                      Please enter the flight number to book                     **");
+        System.out.println("**                                Enter 0 to go back                               **");
+        System.out.println("**                                                                                 **");
+        System.out.println("*************************************************************************************");
+        System.out.println("**                                                                                 **");
+        System.out.println("** ID.  Num.     Dep.      Dest.       Dep.Time          Dest.Time       Status    **");
+        for (Flight flight:flights) {
+            System.out.print("** ");
+            System.out.printf("%2d)", flight.getFlightID());
+            System.out.print(" ");
+            System.out.printf("%-6s", flight.getFlightNumber());
+            System.out.print("  ");
+            System.out.printf("%-8s", flight.getDepartureAirport().getCityName());
+            System.out.print("  ");
+            System.out.printf("%-8s", flight.getArrivalAirport().getCityName());
+            System.out.print("  ");
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            System.out.print(format.format(flight.getDepartureTime()));
+            System.out.print("  ");
+            System.out.print(format.format(flight.getArrivalTime()));
+            System.out.print("  ");
+            System.out.printf("%-11s", flight.getFlightStatus());
+            System.out.println(" **");
+        }
+        System.out.println("**                                                                                 **");
+        System.out.println("*************************************************************************************");
+        System.out.println("*************************************************************************************");
+        System.out.print("Please enter the number to select: ");
+        int input2 = scanner.nextInt();
+        if (input2 == 0) {
+            QueryFlightByFlightNum();
+        } else {
+            if (mainMethods.isLogin()) {
+                if (Flight.getFlightByID(input2).getFlightStatus() != FlightStatus.AVAILABLE) {
+                    System.out.println("Sorry, the flight you select is not available at present.");
+                    Wait(1);
+                    QueryFlightByFlightNum();
+                }else{
+                    MakeOrder(input2);
+                }
+            } else {
+                System.out.println("Sorry, you are not logged in, please login(1) or register(2) first.");
+                System.out.print("Please enter the number to select: ");
+                int input3 = scanner.nextInt();
+                switch (input3) {
+                    case 1:
+                        Clear();
+                        Login();
+                        break;
+                    case 2:
+                        Clear();
+                        Register();
+                        break;
+
+                }
+            }
         }
     }
 
@@ -110,17 +194,17 @@ public class Main {
         try{
             Date depDate = format1.parse(depDateStr);
             ArrayList<Flight> flights = mainMethods.queryFlight(Airport.getAirportByID(depAirportNum).getAirportName(), Airport.getAirportByID(destAirportNum).getAirportName(), depDate);
-            System.out.println("******************************************************************************");
-            System.out.println("******************************************************************************");
-            System.out.println("**                                                                          **");
-            System.out.println("**                  Welcome to the flight booking system!!                  **");
-            System.out.println("**                                                                          **");
-            System.out.println("**                  Please enter the flight number to book                  **");
-            System.out.println("**                           Enter 0 to go back                             **");
-            System.out.println("**                                                                          **");
-            System.out.println("******************************************************************************");
-            System.out.println("**                                                                          **");
-            System.out.println("** ID.  Num.     Dep.      Dest.         Dep.Time            Dest.Time      **");
+            System.out.println("*************************************************************************************");
+            System.out.println("*************************************************************************************");
+            System.out.println("**                                                                                 **");
+            System.out.println("**                      Welcome to the flight booking system!!                     **");
+            System.out.println("**                                                                                 **");
+            System.out.println("**                      Please enter the flight number to book                     **");
+            System.out.println("**                                Enter 0 to go back                               **");
+            System.out.println("**                                                                                 **");
+            System.out.println("*************************************************************************************");
+            System.out.println("**                                                                                 **");
+            System.out.println("** ID.  Num.     Dep.      Dest.       Dep.Time          Dest.Time       Status    **");
             for (Flight flight:flights) {
                 System.out.print("** ");
                 System.out.printf("%2d)", flight.getFlightID());
@@ -131,22 +215,30 @@ public class Main {
                 System.out.print("  ");
                 System.out.printf("%-8s", flight.getArrivalAirport().getCityName());
                 System.out.print("  ");
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                 System.out.print(format.format(flight.getDepartureTime()));
                 System.out.print("  ");
                 System.out.print(format.format(flight.getArrivalTime()));
+                System.out.print("  ");
+                System.out.printf("%-11s", flight.getFlightStatus());
                 System.out.println(" **");
             }
-            System.out.println("**                                                                          **");
-            System.out.println("******************************************************************************");
-            System.out.println("******************************************************************************");
+            System.out.println("**                                                                                 **");
+            System.out.println("*************************************************************************************");
+            System.out.println("*************************************************************************************");
             System.out.print("Please enter the number to select: ");
             int input = scanner.nextInt();
             if (input == 0) {
                 QueryFlightByDepAndDest();
             }else{
                 if (mainMethods.isLogin()){
-                    /* TODO: Make Order */
+                    if (Flight.getFlightByID(input).getFlightStatus() != FlightStatus.AVAILABLE) {
+                        System.out.println("Sorry, the flight you select is not available at present.");
+                        Wait(1);
+                        QueryFlightByDepAndDest();
+                    }else{
+                        MakeOrder(input);
+                    }
                 }else{
                     System.out.println("Sorry, you are not logged in, please login(1) or register(2) first.");
                     System.out.print("Please enter the number to select: ");
@@ -162,6 +254,63 @@ public class Main {
             Wait(1);
             Clear();
             QueryFlightByDepAndDest();
+        }
+    }
+    public static void MakeOrder(int flightID) {
+        Scanner scanner = new Scanner(System.in);
+        Flight flight = Flight.getFlightByID(flightID);
+        System.out.println("*****************************************************************************************************************");
+        System.out.println("**                                                                                                             **");
+        System.out.println("**                                    Welcome to the flight booking system!!                                   **");
+        System.out.println("**                                                                                                             **");
+        System.out.println("**                                     Please select the seat class to book                                    **");
+        System.out.println("**                                      1) Economy Class    2) First Class                                     **");
+        System.out.println("**                                              Enter 0 to go back                                             **");
+        System.out.println("**                                                                                                             **");
+        System.out.println("*****************************************************************************************************************");
+        System.out.println("**                                                                                                             **");
+        System.out.println("** ID.  Num.     Dep.      Dest.       Dep.Time          Dest.Time       Status     Economy Price  First Price **");
+        System.out.print("** ");
+        System.out.printf("%2d)", flight.getFlightID());
+        System.out.print(" ");
+        System.out.printf("%-6s", flight.getFlightNumber());
+        System.out.print("  ");
+        System.out.printf("%-8s", flight.getDepartureAirport().getCityName());
+        System.out.print("  ");
+        System.out.printf("%-8s", flight.getArrivalAirport().getCityName());
+        System.out.print("  ");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        System.out.print(format.format(flight.getDepartureTime()));
+        System.out.print("  ");
+        System.out.print(format.format(flight.getArrivalTime()));
+        System.out.print("  ");
+        System.out.printf("%-11s", flight.getFlightStatus());
+        System.out.print("     ");
+        System.out.printf("RMB %-4d", flight.getEconomyPrice());
+        System.out.print("      ");
+        System.out.printf("RMB %-4d", flight.getFirstPrice());
+        System.out.println("  **");
+        System.out.println("**                                                                                                             **");
+        System.out.println("*****************************************************************************************************************");
+        System.out.println("*****************************************************************************************************************");
+        System.out.print("Please select the seat class to book: ");
+        int input = scanner.nextInt();
+        try {
+            try{
+                switch (input) {
+                    case 0: QueryFlight(); break;
+                    case 1: mainMethods.reserveFlight(flightID, "Economy"); System.out.println("Order Successful!!"); Wait(1); UserCenter(); break;
+                    case 2: mainMethods.reserveFlight(flightID, "First"); System.out.println("Order Successful!!"); Wait(1); UserCenter(); break;
+                }
+            }catch (StatusUnavailableException ex2) {
+                System.out.println("Status Unavailable");
+                Wait(1);
+                QueryFlight();
+            }
+        }catch (PermissionDeniedException ex) {
+            System.out.println("Permission Denied");
+            Wait(1);
+            Login();
         }
     }
 
@@ -375,7 +524,8 @@ public class Main {
         System.out.println("**      1) Query Flight                                   **");
         System.out.println("**      2) Create Flight                                  **");
         System.out.println("**      3) Edit Flight                                    **");
-        System.out.println("**      3) User Manage                                    **");
+        System.out.println("**      4) User Manage                                    **");
+        System.out.println("**      5) Add Admin                                      **");
         System.out.println("**                                                        **");
         System.out.println("************************************************************");
         System.out.println("************************************************************");
@@ -386,6 +536,7 @@ public class Main {
             case 2: Clear(); /* TODO: Create Flight */
             case 3: Clear(); /* TODO: Edit Flight */
             case 4: Clear(); /* TODO: User Manage */
+            case 5: Clear(); /* TODO: Add Admin */
         }
     }
 
