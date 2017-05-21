@@ -25,7 +25,7 @@ class Task extends TimerTask {
         ArrayList<Flight> flights0 = (ArrayList<Flight>)Data.flights.clone();
         Date now = new Date();
         for (Flight flight: flights0) {
-            if (flight.getDepartureTime().getTime() - now.getTime() <= TIME_TO_TERMINATE) {
+            if (flight.getDepartureTime().getTime() - now.getTime() <= TIME_TO_TERMINATE && flight.getSeatBooked().size() <= 152) {
                 flight.setFlightStatus(FlightStatus.TERMINATE);
                 try {
                 /* Initialize the MySQL Connection */
@@ -45,7 +45,7 @@ class Task extends TimerTask {
                     conn.close();
                 }catch(Exception e)
                 {e.printStackTrace();}
-            }else if (flight.getDepartureTime().getTime() - now.getTime() <= TIME_TO_PUBLISH) {
+            }else if (flight.getDepartureTime().getTime() - now.getTime() <= TIME_TO_PUBLISH && flight.getSeatBooked().size() <= 152) {
                 flight.setFlightStatus(FlightStatus.AVAILABLE);
                 try {
                 /* Initialize the MySQL Connection */
@@ -58,6 +58,27 @@ class Task extends TimerTask {
                     Statement stmt = conn.createStatement(); //创建Statement对象
                     //System.out.println("成功连接到数据库！");
                     String sql = "update flight set flightStatus='" + FlightStatus.AVAILABLE.toString() +"' where flightID='" + flight.getFlightID() + "'";
+                    PreparedStatement pstmt;
+                    pstmt = conn.prepareStatement(sql);
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                    conn.close();
+                }catch(Exception e)
+                {e.printStackTrace();}
+            }
+            if (flight.getFlightStatus() == FlightStatus.AVAILABLE && flight.getSeatBooked().size() == 152) {
+                flight.setFlightStatus(FlightStatus.FULL);
+                try {
+                /* Initialize the MySQL Connection */
+                    //调用Class.forName()方法加载驱动程序
+                    Class.forName("com.mysql.jdbc.Driver");
+                    //System.out.println("成功加载MySQL驱动！");
+                    String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+                    Connection conn;
+                    conn = DriverManager.getConnection(url,"flight","123130");
+                    Statement stmt = conn.createStatement(); //创建Statement对象
+                    //System.out.println("成功连接到数据库！");
+                    String sql = "update flight set flightStatus='" + FlightStatus.FULL.toString() +"' where flightID='" + flight.getFlightID() + "'";
                     PreparedStatement pstmt;
                     pstmt = conn.prepareStatement(sql);
                     pstmt.executeUpdate();
