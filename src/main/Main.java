@@ -1,6 +1,5 @@
 package main;
 
-import com.sun.tools.corba.se.idl.constExpr.Or;
 import data.Data;
 import exceptions.PermissionDeniedException;
 import exceptions.StatusUnavailableException;
@@ -75,7 +74,7 @@ public class Main {
         switch (input) {
             case 1: Clear(); QueryFlightByDepAndDest(); break;
             case 2: Clear(); QueryFlightByFlightNum(); break;
-            case 3: Clear(); if (mainMethods.isLogin()){UserCenter();}else{main(null);} break;
+            case 3: Clear(); if (mainMethods.isLogin()&&!mainMethods.isAdmin()){UserCenter();}else if(mainMethods.isLogin()&&mainMethods.isAdmin()){AdminCenter();}else{main(null);} break;
             default: System.out.println("Incorrect Input!!"); Wait(1); Clear(); QueryFlight(); break;
         }
     }
@@ -98,6 +97,7 @@ public class Main {
         System.out.print("Please enter the flight number to query: ");
         String input = scanner.nextLine();
         ArrayList<Flight> flights = mainMethods.queryFlight(input);
+        Clear();
         System.out.println("*************************************************************************************");
         System.out.println("*************************************************************************************");
         System.out.println("**                                                                                 **");
@@ -139,6 +139,7 @@ public class Main {
                 if (Flight.getFlightByID(input2).getFlightStatus() != FlightStatus.AVAILABLE) {
                     System.out.println("Sorry, the flight you select is not available at present.");
                     Wait(1);
+                    Clear();
                     QueryFlightByFlightNum();
                 }else{
                     MakeOrder(input2);
@@ -146,6 +147,7 @@ public class Main {
             }else if (mainMethods.isLogin() && mainMethods.isAdmin()){
                 System.out.println("Sorry, you are administrator so you cannot book flights.");
                 Wait(1);
+                Clear();
                 QueryFlight();
             }else{
                 System.out.println("Sorry, you are not logged in, please login(1) or register(2) first.");
@@ -205,6 +207,7 @@ public class Main {
         try{
             Date depDate = format1.parse(depDateStr);
             ArrayList<Flight> flights = mainMethods.queryFlight(Airport.getAirportByID(depAirportNum).getAirportName(), Airport.getAirportByID(destAirportNum).getAirportName(), depDate);
+            Clear();
             System.out.println("*************************************************************************************");
             System.out.println("*************************************************************************************");
             System.out.println("**                                                                                 **");
@@ -240,19 +243,23 @@ public class Main {
             System.out.print("Please enter the number to select: ");
             int input = scanner.nextInt();
             if (input == 0) {
+                Clear();
                 QueryFlightByDepAndDest();
             }else{
                 if (mainMethods.isLogin() && !mainMethods.isAdmin()){
                     if (Flight.getFlightByID(input).getFlightStatus() != FlightStatus.AVAILABLE) {
                         System.out.println("Sorry, the flight you select is not available at present.");
                         Wait(1);
+                        Clear();
                         QueryFlightByDepAndDest();
                     }else{
+                        Clear();
                         MakeOrder(input);
                     }
                 }else if (mainMethods.isLogin() && mainMethods.isAdmin()){
                     System.out.println("Sorry, you are administrator so you cannot book flights.");
                     Wait(1);
+                    Clear();
                     QueryFlight();
                 }else{
                     System.out.println("Sorry, you are not logged in, please login(1) or register(2) first.");
@@ -314,19 +321,21 @@ public class Main {
         try {
             try{
                 switch (input) {
-                    case 0: QueryFlight(); break;
-                    case 1: PayOrder(mainMethods.reserveFlight(flightID, "Economy")); System.out.println("Order Successfully!!"); Wait(1); UserCenter(); break;
-                    case 2: PayOrder(mainMethods.reserveFlight(flightID, "First")); System.out.println("Order Successfully!!"); Wait(1); UserCenter(); break;
+                    case 0: Clear(); QueryFlight(); break;
+                    case 1: Clear(); PayOrder(mainMethods.reserveFlight(flightID, "Economy")); System.out.println("Order Successfully!!"); Wait(1); UserCenter(); break;
+                    case 2: Clear(); PayOrder(mainMethods.reserveFlight(flightID, "First")); System.out.println("Order Successfully!!"); Wait(1); UserCenter(); break;
                     default: System.out.println("Incorrect Input!!"); Wait(1); Clear(); QueryFlight(); break;
                 }
             }catch (StatusUnavailableException ex2) {
                 System.out.println("Status Unavailable");
                 Wait(1);
+                Clear();
                 QueryFlight();
             }
         }catch (PermissionDeniedException ex) {
             System.out.println("Permission Denied");
             Wait(1);
+            Clear();
             Login();
         }
     }
@@ -543,21 +552,25 @@ public class Main {
         System.out.print("Please enter the order ID to cancel: ");
         int input = scanner.nextInt();
         if (input == 0) {
+            Clear();
             UserCenter();
         }else{
             try {
                 if (mainMethods.unsubscribeFlight(input)) {
                     System.out.println("Order Cancel Succeeded!! Refund will be returned to the original source.");
                     Wait(1);
+                    Clear();
                     Orders();
                 }else{
                     System.out.println("Order Cancel Failed!! Please contact our support team.");
                     Wait(1);
+                    Clear();
                     Orders();
                 }
             }catch (PermissionDeniedException ex) {
                 System.out.println("Permission Denied!! Please login.");
                 Wait(1);
+                Clear();
                 Login();
             }
         }
@@ -679,6 +692,7 @@ public class Main {
         }catch (PermissionDeniedException ex) {
             System.out.println("Permission Denied!!");
             Wait(1);
+            Clear();
             Login();
         }
     }
@@ -733,6 +747,7 @@ public class Main {
         }catch (PermissionDeniedException ex) {
             System.out.println("Permission Denied!!");
             Wait(1);
+            Clear();
             Login();
         }
     }
@@ -985,8 +1000,10 @@ public class Main {
         System.out.println("Password Changed Successfully!");
         Wait(1);
         if (mainMethods.isAdmin()) {
+            Clear();
             AdminCenter();
         }else{
+            Clear();
             UserCenter();
         }
     }
@@ -1020,6 +1037,7 @@ public class Main {
         }
         System.out.println("Administrator Added Successfully!");
         Wait(1);
+        Clear();
         AdminCenter();
     }
 
