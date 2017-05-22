@@ -792,6 +792,12 @@ public class Main {
             Wait(1);
             CreateFlight();
         }
+        if (depTime.getTime() >= destTime.getTime()) {
+            System.out.println("The Departure Time is later than Arrival Time!!");
+            Wait(1);
+            Clear();
+            CreateFlight();
+        }
         System.out.print("Please enter the departure airport name: ");
         String depAirport = scanner.nextLine();
         System.out.print("Please enter the destination airport name: ");
