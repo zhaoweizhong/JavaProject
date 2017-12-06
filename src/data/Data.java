@@ -28,10 +28,10 @@ public class Data {
             Class.forName("com.mysql.jdbc.Driver");
             //System.out.println("成功加载MySQL驱动！");
 
-            String url = "jdbc:mysql://ss.lomme.cn:3306/flight";    //JDBC的URL
+            String url = "jdbc:mysql://127.0.0.1:3306/flight";    //JDBC的URL
             Connection conn;
 
-            conn = DriverManager.getConnection(url,"flight","123130");
+            conn = DriverManager.getConnection(url,"flight","password");
             Statement stmt = conn.createStatement(); //创建Statement对象
             //System.out.println("成功连接到数据库！");
 
